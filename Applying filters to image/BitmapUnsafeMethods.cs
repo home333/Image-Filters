@@ -1,169 +1,156 @@
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 
 namespace SimplePainterNamespace
 {
     /// <summary>
-    /// Класс, представляющий небезопасные методы работы с изображениями
+    ///     Класс, представляющий небезопасные методы работы с изображениями
     /// </summary>
-    unsafe public class BitmapUnsafeMethods
+    public unsafe class BitmapUnsafeMethods
     {
         /// <summary>
-        /// Структура цветов пикселя
-        /// Описывает метод ToString();
+        ///     Рабочее изображение
         /// </summary>
-        private struct PixelData
-        {
-            public byte blue;
-            public byte green;
-            public byte red;
-            public byte alpha;
-
-            public override string ToString()
-            {
-                return "(" + alpha.ToString() + ", " + red.ToString() + ", " + green.ToString() + ", " + blue.ToString() + ")";
-            }
-        }
+        private readonly Bitmap _workingBitmap;
 
         /// <summary>
-        /// Рабочее изображение
+        ///     Атрибуты точечного изображения
         /// </summary>
-        private Bitmap workingBitmap = null;
-        /// <summary>
-        /// Ширина
-        /// </summary>
-        private int width = 0;
-        /// <summary>
-        /// Атрибуты точечного изображения
-        /// </summary>
-        private BitmapData bitmapData = null;
-        /// <summary>
-        /// Байтовая ссылка на указатель
-        /// </summary>
-        private Byte* pBase = null;
+        private BitmapData _bitmapData;
 
         /// <summary>
-        /// Конструктор класса
+        ///     Байтовая ссылка на указатель
+        /// </summary>
+        private Byte* _pBase = null;
+
+        /// <summary>
+        ///     Структура пикселей
+        /// </summary>
+        private PixelData* _pixelData = null;
+
+        /// <summary>
+        ///     Ширина
+        /// </summary>
+        private int _width;
+
+        /// <summary>
+        ///     Конструктор класса
         /// </summary>
         /// <param name="inputBitmap">изображение для работы</param>
         public BitmapUnsafeMethods(Bitmap inputBitmap)
         {
-            workingBitmap = inputBitmap;
+            _workingBitmap = inputBitmap;
         }
 
         /// <summary>
-        /// Блокирует изображение из конструктора в памяти для работы
-        /// НЕ УЧИТЫВАЕТ ALPHA КАНАЛ!
-        /// Заполняет bitmapData, pBase
+        ///     Получает цвет следующего пикселя из аттрибутов
+        ///     WARNING! Не учитывается матричная позиция пикселя
+        /// </summary>
+        public Color GetPixelNext
+        {
+            get
+            {
+                _pixelData++;
+                return Color.FromArgb(_pixelData->Alpha, _pixelData->Red, _pixelData->Green, _pixelData->Blue);
+            }
+        }
+
+        /// <summary>
+        ///     Блокирует изображение из конструктора в памяти для работы
+        ///     НЕ УЧИТЫВАЕТ ALPHA КАНАЛ!
+        ///     Заполняет bitmapData, pBase
         /// </summary>
         public void LockImageWithoutAlpha()
         {
-            Rectangle bounds = new Rectangle(Point.Empty, workingBitmap.Size);
+            var bounds = new Rectangle(Point.Empty, _workingBitmap.Size);
 
-            width = (int)(bounds.Width * sizeof(PixelData));
-            if (width % 4 != 0) width = 4 * (width / 4 + 1);
+            _width = bounds.Width*sizeof (PixelData);
+            if (_width%4 != 0) _width = 4*(_width/4 + 1);
 
             //Lock Image
-            bitmapData = workingBitmap.LockBits(bounds, ImageLockMode.ReadWrite, PixelFormat.Format32bppRgb);
-            pBase = (Byte*)bitmapData.Scan0.ToPointer();
+            _bitmapData = _workingBitmap.LockBits(bounds, ImageLockMode.ReadWrite, PixelFormat.Format32bppRgb);
+            _pBase = (Byte*) _bitmapData.Scan0.ToPointer();
         }
 
         /// <summary>
-        /// Возвращает набор байтов из закрепленного в памяти изображения
+        ///     Возвращает набор байтов из закрепленного в памяти изображения
         /// </summary>
         /// <param name="bytescount">количество байтов для возвращения</param>
         /// <returns>массив байтов</returns>
         public byte[] ReturnBytesFromLockImage(int bytescount)
         {
-            byte[] outputarr = new byte[bytescount];
-            System.Runtime.InteropServices.Marshal.Copy((IntPtr)pBase, outputarr, 0, bytescount);
+            var outputarr = new byte[bytescount];
+            Marshal.Copy((IntPtr) _pBase, outputarr, 0, bytescount);
             return outputarr;
         }
 
         /// <summary>
-        /// Блокирует изображение из конструктора в памяти для работы
-        ///УЧИТЫВАЕТ ALPHA КАНАЛ!
-        /// Заполняет bitmapData, pBase
+        ///     Блокирует изображение из конструктора в памяти для работы
+        ///     УЧИТЫВАЕТ ALPHA КАНАЛ!
+        ///     Заполняет bitmapData, pBase
         /// </summary>
         public void LockImage()
         {
-            Rectangle bounds = new Rectangle(Point.Empty, workingBitmap.Size);
+            var bounds = new Rectangle(Point.Empty, _workingBitmap.Size);
 
-            width = (int)(bounds.Width * sizeof(PixelData));
-            if (width % 4 != 0) width = 4 * (width / 4 + 1);
+            _width = bounds.Width*sizeof (PixelData);
+            if (_width%4 != 0) _width = 4*(_width/4 + 1);
 
             //Lock Image
-            bitmapData = workingBitmap.LockBits(bounds, ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
-            pBase = (Byte*)bitmapData.Scan0.ToPointer();
+            _bitmapData = _workingBitmap.LockBits(bounds, ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+            _pBase = (Byte*) _bitmapData.Scan0.ToPointer();
         }
 
         /// <summary>
-        /// Возвращает указатель на аттрибуты изображения
+        ///     Возвращает указатель на аттрибуты изображения
         /// </summary>
         /// <returns>указатель на аттрибуты изображения</returns>
         public IntPtr ReturnBitmapDataPointer()
         {
-            return (IntPtr)pBase;
+            return (IntPtr) _pBase;
         }
 
         /// <summary>
-        /// Структура пикселей
-        /// </summary>
-        private PixelData* pixelData = null;
-
-        /// <summary>
-        /// Получает пиксель по координатам
+        ///     Получает пиксель по координатам
         /// </summary>
         /// <param name="xcoord">Координата X</param>
         /// <param name="ycoord">Координата Y</param>
         /// <returns>Цвет пикселя</returns>
         public Color GetPixel(int xcoord, int ycoord)
         {
-            pixelData = (PixelData*)(pBase + ycoord * width + xcoord * sizeof(PixelData));
-            return Color.FromArgb(pixelData->alpha, pixelData->red, pixelData->green, pixelData->blue);
+            _pixelData = (PixelData*) (_pBase + ycoord*_width + xcoord*sizeof (PixelData));
+            return Color.FromArgb(_pixelData->Alpha, _pixelData->Red, _pixelData->Green, _pixelData->Blue);
         }
 
         /// <summary>
-        ///  Получает цвет следующего пикселя из аттрибутов
-        ///  WARNING! Не учитывается матричная позиция пикселя
-        /// </summary>
-        public Color GetPixelNext
-        {
-            get
-            {
-                pixelData++;
-                return Color.FromArgb(pixelData->alpha, pixelData->red, pixelData->green, pixelData->blue);
-            }
-        }
-
-        /// <summary>
-        /// Изменяет цвет указанного пикселя
+        ///     Изменяет цвет указанного пикселя
         /// </summary>
         /// <param name="xcoord">Координата X</param>
         /// <param name="ycoord">Координата Y</param>
         /// <param name="color">Цвет пикселя</param>
         public void SetPixel(int xcoord, int ycoord, Color color)
         {
-            PixelData* data = (PixelData*)(pBase + ycoord * width + xcoord * sizeof(PixelData));
-            data->alpha = color.A;
-            data->red = color.R;
-            data->green = color.G;
-            data->blue = color.B;
+            var data = (PixelData*) (_pBase + ycoord*_width + xcoord*sizeof (PixelData));
+            data->Alpha = color.A;
+            data->Red = color.R;
+            data->Green = color.G;
+            data->Blue = color.B;
         }
 
         /// <summary>
-        /// Разблокирует изображение в памяти
+        ///     Разблокирует изображение в памяти
         /// </summary>
         public void UnlockImage()
         {
-            workingBitmap.UnlockBits(bitmapData);
-            bitmapData = null;
-            pBase = null;
+            _workingBitmap.UnlockBits(_bitmapData);
+            _bitmapData = null;
+            _pBase = null;
         }
 
         /// <summary>
-        /// Метод восстановления изображения из набора байтов
+        ///     Метод восстановления изображения из набора байтов
         /// </summary>
         /// <param name="input">Набор байтов, представляющий изображение</param>
         /// <param name="width">Ширина изображения</param>
@@ -171,38 +158,49 @@ namespace SimplePainterNamespace
         /// <returns>Возвращает Bitmap</returns>
         public static Bitmap GetBitmap(byte[] input, int width, int height)
         {
-            if (input.Length % 4 != 0) throw new ArgumentException(string.Format("ERROR! BitmapData is corrupted!"));
-            Bitmap output = new Bitmap(width, height);
-            unsafe
-            {
-                BitmapUnsafeMethods run = new BitmapUnsafeMethods(output);
-                run.LockImageWithoutAlpha();
+            if (input.Length%4 != 0) throw new ArgumentException(string.Format("ERROR! BitmapData is corrupted!"));
+            var output = new Bitmap(width, height);
+            var run = new BitmapUnsafeMethods(output);
+            run.LockImageWithoutAlpha();
 
-                System.Runtime.InteropServices.Marshal.Copy(input, 0, run.ReturnBitmapDataPointer(), input.Length);
-                run.UnlockImage();
-                return output;
-            }
+            Marshal.Copy(input, 0, run.ReturnBitmapDataPointer(), input.Length);
+            run.UnlockImage();
+            return output;
         }
 
         /// <summary>
-        /// Метод для получения массива байтов с изображения
+        ///     Метод для получения массива байтов с изображения
         /// </summary>
         /// <param name="input">Изображение для получения набора байтов</param>
         /// <returns>
-        /// набор байтов с изображения
+        ///     набор байтов с изображения
         /// </returns>
         public static byte[] GetBytes(Bitmap input)
         {
-            int bytesCount = input.Width * input.Height * 4;
-            unsafe
+            int bytesCount = input.Width*input.Height*4;
+            var run = new BitmapUnsafeMethods(input);
+            run.LockImageWithoutAlpha();
+
+            byte[] output = run.ReturnBytesFromLockImage(bytesCount);
+
+            run.UnlockImage();
+            return output;
+        }
+
+        /// <summary>
+        ///     Структура цветов пикселя
+        ///     Описывает метод ToString();
+        /// </summary>
+        private struct PixelData
+        {
+            public byte Alpha;
+            public byte Blue;
+            public byte Green;
+            public byte Red;
+
+            public override string ToString()
             {
-                BitmapUnsafeMethods run = new BitmapUnsafeMethods(input);
-                run.LockImageWithoutAlpha();
-
-                byte[] output = run.ReturnBytesFromLockImage(bytesCount);
-
-                run.UnlockImage();
-                return output;
+                return "(" + Alpha + ", " + Red + ", " + Green + ", " + Blue + ")";
             }
         }
     }

@@ -1,15 +1,16 @@
 ﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+
 namespace SimplePainterNamespace
 {
     /// <summary>
-    /// Класс, содержащий методы работы с изображением в цветовом диапазоне (работа с пикселями)
+    ///     Класс, содержащий методы работы с изображением в цветовом диапазоне (работа с пикселями)
     /// </summary>
-    static class ColorDiapasoneFilters
+    internal static class ColorDiapasoneFilters
     {
-
         public static Bitmap MedianFilter(Bitmap inputimage)
         {
             //Ширина изображения (для уменьшения обращений к свойству объекта)
@@ -17,28 +18,44 @@ namespace SimplePainterNamespace
             //Высота изображения (для уменьшения обращений к свойству объекта)
             int height = inputimage.Height;
             //Инициализация объектов для хранения данных о цветовых компонентов и цветах пикселей
-            List<byte> r = new List<byte>();
-            List<byte> g = new List<byte>();
-            List<byte> b = new List<byte>();
-            List<Color> lst = new List<Color>();
+            var r = new List<byte>();
+            var g = new List<byte>();
+            var b = new List<byte>();
+            var lst = new List<Color>();
             byte[] inputBytes = BitmapUnsafeMethods.GetBytes(inputimage);
-           
+
             for (int y = 1; y < height - 2; y++)
             {
                 for (int x = 1; x < width - 2; x++)
                 {
-                    r.Clear(); g.Clear(); b.Clear(); lst.Clear();
+                    r.Clear();
+                    g.Clear();
+                    b.Clear();
+                    lst.Clear();
                     //Соседние пиксели от текущего
 
-                    lst.Add(Color.FromArgb(0, inputBytes[4 * (width * y + (x - 1)) + 0], inputBytes[4 * (width * y + (x - 1)) + 1], inputBytes[4 * (width * y + (x - 1)) + 2]));
-                    lst.Add(Color.FromArgb(0, inputBytes[4 * (width * y + x) + 0], inputBytes[4 * (width * y + x) + 1], inputBytes[4 * (width * y + x) + 2]));
-                    lst.Add(Color.FromArgb(0, inputBytes[4 * (width * y + (x + 1)) + 0], inputBytes[4 * (width * y + (x + 1)) + 1], inputBytes[4 * (width * y + (x + 1)) + 2]));
-                    lst.Add(Color.FromArgb(0, inputBytes[4 * (width * (y - 1) + (x - 1)) + 0], inputBytes[4 * (width * (y - 1) + (x - 1)) + 1], inputBytes[4 * (width * (y - 1) + (x - 1)) + 2]));
-                    lst.Add(Color.FromArgb(0, inputBytes[4 * (width * (y - 1) + x) + 0], inputBytes[4 * (width * (y - 1) + x) + 1], inputBytes[4 * (width * (y - 1) + x) + 2]));
-                    lst.Add(Color.FromArgb(0, inputBytes[4 * (width * (y - 1) + (x + 1)) + 0], inputBytes[4 * (width * (y - 1) + (x + 1)) + 1], inputBytes[4 * (width * (y - 1) + (x + 1)) + 2]));
-                    lst.Add(Color.FromArgb(0, inputBytes[4 * (width * (y + 1) + (x - 1)) + 0], inputBytes[4 * (width * (y + 1) + (x - 1)) + 1], inputBytes[4 * (width * (y + 1) + (x - 1)) + 2]));
-                    lst.Add(Color.FromArgb(0, inputBytes[4 * (width * (y + 1) + x) + 0], inputBytes[4 * (width * (y + 1) + x) + 1], inputBytes[4 * (width * (y + 1) + x) + 2]));
-                    lst.Add(Color.FromArgb(0, inputBytes[4 * (width * (y + 1) + (x + 1)) + 0], inputBytes[4 * (width * (y + 1) + (x + 1)) + 1], inputBytes[4 * (width * (y + 1) + (x + 1)) + 2]));
+                    lst.Add(Color.FromArgb(0, inputBytes[4*(width*y + (x - 1)) + 0],
+                                           inputBytes[4*(width*y + (x - 1)) + 1], inputBytes[4*(width*y + (x - 1)) + 2]));
+                    lst.Add(Color.FromArgb(0, inputBytes[4*(width*y + x) + 0], inputBytes[4*(width*y + x) + 1],
+                                           inputBytes[4*(width*y + x) + 2]));
+                    lst.Add(Color.FromArgb(0, inputBytes[4*(width*y + (x + 1)) + 0],
+                                           inputBytes[4*(width*y + (x + 1)) + 1], inputBytes[4*(width*y + (x + 1)) + 2]));
+                    lst.Add(Color.FromArgb(0, inputBytes[4*(width*(y - 1) + (x - 1)) + 0],
+                                           inputBytes[4*(width*(y - 1) + (x - 1)) + 1],
+                                           inputBytes[4*(width*(y - 1) + (x - 1)) + 2]));
+                    lst.Add(Color.FromArgb(0, inputBytes[4*(width*(y - 1) + x) + 0],
+                                           inputBytes[4*(width*(y - 1) + x) + 1], inputBytes[4*(width*(y - 1) + x) + 2]));
+                    lst.Add(Color.FromArgb(0, inputBytes[4*(width*(y - 1) + (x + 1)) + 0],
+                                           inputBytes[4*(width*(y - 1) + (x + 1)) + 1],
+                                           inputBytes[4*(width*(y - 1) + (x + 1)) + 2]));
+                    lst.Add(Color.FromArgb(0, inputBytes[4*(width*(y + 1) + (x - 1)) + 0],
+                                           inputBytes[4*(width*(y + 1) + (x - 1)) + 1],
+                                           inputBytes[4*(width*(y + 1) + (x - 1)) + 2]));
+                    lst.Add(Color.FromArgb(0, inputBytes[4*(width*(y + 1) + x) + 0],
+                                           inputBytes[4*(width*(y + 1) + x) + 1], inputBytes[4*(width*(y + 1) + x) + 2]));
+                    lst.Add(Color.FromArgb(0, inputBytes[4*(width*(y + 1) + (x + 1)) + 0],
+                                           inputBytes[4*(width*(y + 1) + (x + 1)) + 1],
+                                           inputBytes[4*(width*(y + 1) + (x + 1)) + 2]));
 
                     //Разбор информации о цветах пикселей по соответствующим компонентам
                     foreach (Color elm in lst)
@@ -48,63 +65,55 @@ namespace SimplePainterNamespace
                         b.Add(elm.B);
                     }
                     //Сортировка по возрастанию
-                    r.Sort(); g.Sort(); b.Sort();
+                    r.Sort();
+                    g.Sort();
+                    b.Sort();
                     //Закраска текущего пикселя средним значением из списка
-                    inputBytes[4 * (width * y + x) + 0] = (byte)r[4];
-                    inputBytes[4 * (width * y + x) + 1] = (byte)g[4];
-                    inputBytes[4 * (width * y + x) + 2] = (byte)b[4];
-
+                    inputBytes[4*(width*y + x) + 0] = r[4];
+                    inputBytes[4*(width*y + x) + 1] = g[4];
+                    inputBytes[4*(width*y + x) + 2] = b[4];
                 }
             }
 
             return BitmapUnsafeMethods.GetBitmap(inputBytes, width, height);
-                        
-        
         }
 
         public static Bitmap Pixelate(Bitmap input, Int32 pixelateSize = 15)
         {
             int width = input.Width;
             int height = input.Height;
-            Bitmap output = new Bitmap(input);
-            unsafe
+            var output = new Bitmap(input);
+            var run = new BitmapUnsafeMethods(output);
+            run.LockImage();
+
+
+            for (Int32 xx = 0; xx < width - 1; xx += pixelateSize)
             {
-                BitmapUnsafeMethods run = new BitmapUnsafeMethods(output);
-                run.LockImage();
-
-            
-           
-                for (Int32 xx = 0; xx < width -1; xx += pixelateSize)
+                for (Int32 yy = 0; yy < height - 1; yy += pixelateSize)
                 {
-                    for (Int32 yy =0; yy < height -1; yy += pixelateSize)
-                    {
-                        Int32 offsetX = pixelateSize / 2;
-                        Int32 offsetY = pixelateSize / 2;
+                    Int32 offsetX = pixelateSize/2;
+                    Int32 offsetY = pixelateSize/2;
 
-                        // make sure that the offset is within the boundry of the image
-                        while (xx + offsetX >= width) offsetX--;
-                        while (yy + offsetY >= height) offsetY--;
+                    // make sure that the offset is within the boundry of the image
+                    while (xx + offsetX >= width) offsetX--;
+                    while (yy + offsetY >= height) offsetY--;
 
-                        // get the pixel color in the center of the soon to be pixelated area
-                        Color pixel = run.GetPixel(xx + offsetX, yy + offsetY);
+                    // get the pixel color in the center of the soon to be pixelated area
+                    Color pixel = run.GetPixel(xx + offsetX, yy + offsetY);
 
-                        // for each pixel in the pixelate size, set it to the center color
-                        for (Int32 x = xx; x < xx + pixelateSize && x < width; x++)
-                            for (Int32 y = yy; y < yy + pixelateSize && y < height; y++)
-                                run.SetPixel(x, y, pixel);
-                    }
+                    // for each pixel in the pixelate size, set it to the center color
+                    for (Int32 x = xx; x < xx + pixelateSize && x < width; x++)
+                        for (Int32 y = yy; y < yy + pixelateSize && y < height; y++)
+                            run.SetPixel(x, y, pixel);
                 }
-                run.UnlockImage();
-
-            
             }
+            run.UnlockImage();
             return output;
         }
 
 
-
         /// <summary>
-        /// Метод применения фильтра "Только синий"
+        ///     Метод применения фильтра "Только синий"
         /// </summary>
         /// <param name="input">Изображение</param>
         /// <returns>Изображение с фильтром</returns>
@@ -112,233 +121,209 @@ namespace SimplePainterNamespace
         {
             int width = input.Width;
             int height = input.Height;
-            Bitmap output = new Bitmap(input);
+            var output = new Bitmap(input);
             Color color;
-            unsafe
+            var run = new BitmapUnsafeMethods(output);
+            run.LockImage();
+            for (int y = 0; y < height - 1; y++)
             {
-                BitmapUnsafeMethods run = new BitmapUnsafeMethods(output);
-                run.LockImage();
-                for (int y = 0; y < height - 1; y++)
+                for (int x = 0; x < width - 1; x++)
                 {
-                    for (int x = 0; x < width - 1; x++)
-                    {
-                        byte A, R, G, B;
-                        color = run.GetPixel(x, y);
-                        A = (byte)color.A;
-                        R = (byte)(color.R);
-                        G = (byte)(color.G);
-                        B = (byte)(color.B);
+                    color = run.GetPixel(x, y);
+                    byte a = color.A;
+                    byte r = color.R;
+                    byte g = color.G;
+                    byte b = color.B;
 
-                        run.SetPixel(x, y, Color.FromArgb((int)A, (int)G, (int)B, (int)R));
-                    }
+                    run.SetPixel(x, y, Color.FromArgb(a, g, b, r));
                 }
-                run.UnlockImage();
             }
+            run.UnlockImage();
             return output;
         }
 
         /// <summary>
-        /// Метод для поворота изображения на 90 градусов по часовой стрелке
+        ///     Метод для поворота изображения на 90 градусов по часовой стрелке
         /// </summary>
         /// <param name="input">изображение для обработки</param>
         /// <returns>Повернутое на 90 градусов по часовой стрелке изображение</returns>
-        /// 
         public static Bitmap Clockwise(Bitmap input)
         {
             int width = input.Height;
             int height = input.Width;
-            Bitmap output = new Bitmap(width, height);
-            unsafe
-            {
-                BitmapUnsafeMethods run = new BitmapUnsafeMethods(output);
-                BitmapUnsafeMethods toout = new BitmapUnsafeMethods(input);
-                run.LockImage();
-                toout.LockImage();
+            var output = new Bitmap(width, height);
+            var run = new BitmapUnsafeMethods(output);
+            var toout = new BitmapUnsafeMethods(input);
+            run.LockImage();
+            toout.LockImage();
 
-                for (int y = 0; y < width - 1; y++)
+            for (int y = 0; y < width - 1; y++)
+            {
+                for (int x = 0; x < height - 1; x++)
                 {
-                    for (int x = 0; x < height - 1; x++)
-                    {
-                        run.SetPixel(width - 1 - (y - 1), x, toout.GetPixel(x, y));
-                    }
+                    run.SetPixel(width - 1 - (y - 1), x, toout.GetPixel(x, y));
                 }
-                run.UnlockImage();
-                toout.UnlockImage();
             }
+            run.UnlockImage();
+            toout.UnlockImage();
             return output;
         }
 
-        public static Bitmap Shadow(Bitmap input, int Distance = 13, int Opacity=150)
+        public static Bitmap Shadow(Bitmap input, int distance = 13, int opacity = 150)
         {
-            Bitmap ShadowImg;
-            Bitmap outputimg;
-            int shWidth = input.Width / 11;
-            int shHeight = input.Height / 11;
-            ShadowImg = new Bitmap(shWidth, shHeight);
-            using (Graphics g = Graphics.FromImage(ShadowImg))
+            int shWidth = input.Width/11;
+            int shHeight = input.Height/11;
+            var shadowImg = new Bitmap(shWidth, shHeight);
+            using (Graphics g = Graphics.FromImage(shadowImg))
             {
                 g.Clear(Color.Transparent);
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                g.FillRectangle(new SolidBrush(Color.FromArgb(Opacity, Color.Black)),
-                                     1, 1, shWidth, shHeight);
-
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+                g.FillRectangle(new SolidBrush(Color.FromArgb(opacity, Color.Black)),
+                                1, 1, shWidth, shHeight);
             }
 
-            int d_shWidth = input.Width + Distance;
-            int d_shHeight = input.Height + Distance;
-            outputimg = new Bitmap(d_shWidth, d_shHeight);
+            int dShWidth = input.Width + distance;
+            int dShHeight = input.Height + distance;
+            var outputimg = new Bitmap(dShWidth, dShHeight);
             using (Graphics g = Graphics.FromImage(outputimg))
             {
-
                 g.Clear(Color.Transparent);
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                g.DrawImage(ShadowImg, new Rectangle(0, 0, d_shWidth, d_shHeight),
-                                        0, 0, ShadowImg.Width, ShadowImg.Height, GraphicsUnit.Pixel);
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+                g.DrawImage(shadowImg, new Rectangle(0, 0, dShWidth, dShHeight),
+                            0, 0, shadowImg.Width, shadowImg.Height, GraphicsUnit.Pixel);
                 g.DrawImage(input,
-                   new Rectangle(0, 0, input.Width, input.Height),
-                          0, 0, input.Width, input.Height, GraphicsUnit.Pixel);
-
+                            new Rectangle(0, 0, input.Width, input.Height),
+                            0, 0, input.Width, input.Height, GraphicsUnit.Pixel);
             }
             return outputimg;
         }
+
         /// <summary>
-        ///  Метод для горизонтального отражения изображения
+        ///     Метод для горизонтального отражения изображения
         /// </summary>
         /// <param name="input">Изображение</param>
         /// <returns>Изображение с фильтром</returns>
         public static Bitmap Mirroring(Bitmap input)
         {
-            Bitmap output = new Bitmap(input);
+            var output = new Bitmap(input);
             int width = output.Width;
             int height = output.Height;
-            unsafe
-            {
-                BitmapUnsafeMethods run = new BitmapUnsafeMethods(output);
-                run.LockImage();
-                Color clr;
-                Color clr2;
-                int z;
+            var run = new BitmapUnsafeMethods(output);
+            run.LockImage();
 
-                for (int y = 0; y < height - 1; y++)
+            for (int y = 0; y < height - 1; y++)
+            {
+                int z = 0;
+                for (int x = width - 1; x > z; x--)
                 {
-                    z = 0;
-                    for (int x = width - 1; x > z; x--)
-                    {
-                        clr = run.GetPixel(x, y);
-                        clr2 = run.GetPixel(z, y);
-                        run.SetPixel(x, y, clr2);
-                        run.SetPixel(z, y, clr);
-                        z++;
-                    }
+                    Color clr = run.GetPixel(x, y);
+                    Color clr2 = run.GetPixel(z, y);
+                    run.SetPixel(x, y, clr2);
+                    run.SetPixel(z, y, clr);
+                    z++;
                 }
-                run.UnlockImage();
             }
+            run.UnlockImage();
 
             return output;
         }
 
         /// <summary>
-        /// Метод применения фильтра "Сдвиг" (вертикальный) для изображения
+        ///     Метод применения фильтра "Сдвиг" (вертикальный) для изображения
         /// </summary>
         /// <param name="input">Изображение</param>
         /// <returns>Изображение с фильтром</returns>
         public static Bitmap ShiftVertical(Bitmap input)
         {
-            Bitmap output = new Bitmap(input);
+            var output = new Bitmap(input);
             int width = output.Width;
             int height = output.Height;
-            Random rand = new Random();
+            var rand = new Random();
 
-            unsafe
+            var run = new BitmapUnsafeMethods(output);
+            run.LockImage();
+
+            for (int x = 0; x <= width - 1; x++)
             {
-                BitmapUnsafeMethods run = new BitmapUnsafeMethods(output);
-                run.LockImage();
-
-                for (int x = 0; x <= width - 1; x++)
+                if (x%2 != 0)
                 {
-                    if (x % 2 != 0)
+                    int ii = rand.Next(1, 5);
+                    ii = rand.Next(1, 5);
+                    for (int i = 1; i <= ii; i++)
                     {
-                        int ii = rand.Next(1, 5);
-                        ii = rand.Next(1, 5);
-                        for (int i = 1; i <= ii; i++)
+                        for (int y = height - 1; y > 1; y--)
                         {
-                            for (int y = height - 1; y > 1; y--)
-                            {
-                                run.SetPixel(x, y, run.GetPixel(x, y - 1));
-                            }
-                        }
-                    }
-                    else
-                    {
-                        int ii = rand.Next(1, 5);
-                        ii = rand.Next(1, 5);
-                        for (int i = 1; i <= ii; i++)
-                        {
-                            for (int y = 0; y < height - 1; y++)
-                            {
-                                run.SetPixel(x, y, run.GetPixel(x, y + 1));
-                            }
+                            run.SetPixel(x, y, run.GetPixel(x, y - 1));
                         }
                     }
                 }
-                run.UnlockImage();
+                else
+                {
+                    int ii = rand.Next(1, 5);
+                    ii = rand.Next(1, 5);
+                    for (int i = 1; i <= ii; i++)
+                    {
+                        for (int y = 0; y < height - 1; y++)
+                        {
+                            run.SetPixel(x, y, run.GetPixel(x, y + 1));
+                        }
+                    }
+                }
             }
+            run.UnlockImage();
             return output;
         }
 
         /// <summary>
-        /// Метод применения фильтра "Сдвиг" (горизонтальный) для изображения
+        ///     Метод применения фильтра "Сдвиг" (горизонтальный) для изображения
         /// </summary>
         /// <param name="input">Изображение</param>
         /// <returns>Изображение с фильтром</returns>
         public static Bitmap Shift(Bitmap input)
         {
-            Bitmap output = new Bitmap(input);
+            var output = new Bitmap(input);
             int width = output.Width;
             int height = output.Height;
-            Random rand = new Random();
+            var rand = new Random();
 
-            unsafe
+            var run = new BitmapUnsafeMethods(output);
+            run.LockImage();
+
+            for (int y = 0; y <= height - 1; y++)
             {
-                BitmapUnsafeMethods run = new BitmapUnsafeMethods(output);
-                run.LockImage();
-
-                for (int y = 0; y <= height - 1; y++)
+                if (y%2 != 0)
                 {
-                    if (y % 2 != 0)
+                    int ii = rand.Next(1, 5);
+                    ii = rand.Next(1, 5);
+                    for (int i = 1; i <= ii; i++)
                     {
-                        int ii = rand.Next(1, 5);
-                        ii = rand.Next(1, 5);
-                        for (int i = 1; i <= ii; i++)
+                        for (int x = width - 1; x >= 1; x--)
                         {
-                            for (int x = width - 1; x >= 1; x--)
-                            {
-                                run.SetPixel(x, y, run.GetPixel(x - 1, y));
-                            }
-                        }
-                    }
-                    else
-                    {
-                        int ii = rand.Next(1, 5);
-                        ii = rand.Next(1, 5);
-                        for (int i = 1; i <= ii; i++)
-                        {
-                            for (int x = 0; x <= width - 1; x++)
-                            {
-                                run.SetPixel(x, y, run.GetPixel(x + 1, y));
-                            }
+                            run.SetPixel(x, y, run.GetPixel(x - 1, y));
                         }
                     }
                 }
-                run.UnlockImage();
+                else
+                {
+                    int ii = rand.Next(1, 5);
+                    ii = rand.Next(1, 5);
+                    for (int i = 1; i <= ii; i++)
+                    {
+                        for (int x = 0; x <= width - 1; x++)
+                        {
+                            run.SetPixel(x, y, run.GetPixel(x + 1, y));
+                        }
+                    }
+                }
             }
+            run.UnlockImage();
             return output;
         }
 
         /// <summary>
-        /// Метод для поворота изображения на 90 градусов против часовой стрелки
+        ///     Метод для поворота изображения на 90 градусов против часовой стрелки
         /// </summary>
         /// <param name="input">Изображение</param>
         /// <returns>Изображение с фильтром</returns>
@@ -346,66 +331,58 @@ namespace SimplePainterNamespace
         {
             int width = input.Height;
             int height = input.Width;
-            Bitmap output = new Bitmap(width, height);
+            var output = new Bitmap(width, height);
 
-            unsafe
+            var run = new BitmapUnsafeMethods(output);
+            var toout = new BitmapUnsafeMethods(input);
+            run.LockImage();
+            toout.LockImage();
+
+            for (int y = 0; y <= width - 1; y++)
             {
-                BitmapUnsafeMethods run = new BitmapUnsafeMethods(output);
-                BitmapUnsafeMethods toout = new BitmapUnsafeMethods(input);
-                run.LockImage();
-                toout.LockImage();
-
-                for (int y = 0; y <= width - 1; y++)
+                for (int x = 0; x <= height - 1; x++)
                 {
-                    for (int x = 0; x <= height - 1; x++)
-                    {
-                        run.SetPixel(y, x, toout.GetPixel(x, y));
-                    }
+                    run.SetPixel(y, x, toout.GetPixel(x, y));
                 }
-                run.UnlockImage();
-                toout.UnlockImage();
             }
+            run.UnlockImage();
+            toout.UnlockImage();
 
             return output;
         }
 
         /// <summary>
-        /// Метод для горизонтального отражения изображения
+        ///     Метод для горизонтального отражения изображения
         /// </summary>
         /// <param name="input">Изображение</param>
         /// <returns>Изображение с фильтром</returns>
         public static Bitmap VerticalMap(Bitmap input)
         {
-            Bitmap output = new Bitmap(input);
+            var output = new Bitmap(input);
             int width = output.Width;
             int height = output.Height;
-            unsafe
-            {
-                BitmapUnsafeMethods run = new BitmapUnsafeMethods(output);
-                run.LockImage();
-                Color clr;
-                Color clr2;
-                int z;
+            var run = new BitmapUnsafeMethods(output);
+            run.LockImage();
 
-                for (int x = 0; x < width - 1; x++)
+            for (int x = 0; x < width - 1; x++)
+            {
+                int z = 0;
+                for (int y = height - 1; y > z; y--)
                 {
-                    z = 0;
-                    for (int y = height - 1; y > z; y--)
-                    {
-                        clr = run.GetPixel(x, y);
-                        clr2 = run.GetPixel(x, z);
-                        run.SetPixel(x, y, clr2);
-                        run.SetPixel(x, z, clr);
-                        z++;
-                    }
+                    Color clr = run.GetPixel(x, y);
+                    Color clr2 = run.GetPixel(x, z);
+                    run.SetPixel(x, y, clr2);
+                    run.SetPixel(x, z, clr);
+                    z++;
                 }
-                run.UnlockImage();
             }
+            run.UnlockImage();
 
             return output;
         }
+
         /// <summary>
-        /// Метод применения фильтра "Шум SaltAndPepper" для изображения
+        ///     Метод применения фильтра "Шум SaltAndPepper" для изображения
         /// </summary>
         /// <param name="input">Изображение</param>
         /// <returns>Изображение с фильтром</returns>
@@ -413,91 +390,84 @@ namespace SimplePainterNamespace
         {
             //Иничиализация объекта генерации случайных чисел для адресов пикселей
             //Иничиализация объекта генерации случайных чисел для случайности цвета
-            Random myrandom = new Random();
-            Random clrrnd = new Random();
+            var myrandom = new Random();
+            var clrrnd = new Random();
             //Ширина изображения (для уменьшения обращений к свойству объекта)
             int width = input.Width;
             //Высота изображения (для уменьшения обращений к свойству объекта)
             int height = input.Height;
             //Количество пикселей на изображении
-            int PixelsCount = width * height;
+            int pixelsCount = width*height;
             //Количество пикселей для генерации шума
-            int PixelsPersent = (10 * PixelsCount) / 100;
-            Bitmap output = new Bitmap(input);
-            unsafe
+            int pixelsPersent = (10*pixelsCount)/100;
+            var output = new Bitmap(input);
+            var run = new BitmapUnsafeMethods(output);
+            run.LockImage();
+            //Цикл по всем выбранным пикселям на изображении
+            for (int i = 1; i <= pixelsPersent; i++)
             {
-                BitmapUnsafeMethods run = new BitmapUnsafeMethods(output);
-                run.LockImage();
-                //Цикл по всем выбранным пикселям на изображении
-                for (int i = 1; i <= PixelsPersent; i++)
+                //Закраска пикселей по случайному адресу белым или черным цветом
+                if (clrrnd.Next(0, 2) == 0)
                 {
-                    //Закраска пикселей по случайному адресу белым или черным цветом
-                    if (clrrnd.Next(0, 2) == 0)
-                    {
-                        run.SetPixel(myrandom.Next(0, width), myrandom.Next(0, height), Color.FromArgb(
-                                                                                             255,
-                                                                                             255,
-                                                                                             255,
-                                                                                             255
-                                                                                                              )
-                                                                                                             );
-                    }
-                    else
-                    {
-                        run.SetPixel(myrandom.Next(0, width), myrandom.Next(0, height), Color.FromArgb(
-                                                                       255,
-                                                                       0,
-                                                                       0,
-                                                                       0
+                    run.SetPixel(myrandom.Next(0, width), myrandom.Next(0, height), Color.FromArgb(
+                        255,
+                        255,
+                        255,
+                        255
                                                                                         )
-                                                                                       );
-                    }
-
-
+                        );
                 }
-                run.UnlockImage();
+                else
+                {
+                    run.SetPixel(myrandom.Next(0, width), myrandom.Next(0, height), Color.FromArgb(
+                        255,
+                        0,
+                        0,
+                        0
+                                                                                        )
+                        );
+                }
             }
-         
-            
+            run.UnlockImage();
+
+
             return output;
         }
+
         /// <summary>
-        /// Метод применения фильтра "Шум" для изображения
+        ///     Метод применения фильтра "Шум" для изображения
         /// </summary>
         /// <param name="input">Изображение</param>
         /// <param name="percent">Процент применения</param>
         /// <returns>Изображение с фильтром</returns>
-        public static Bitmap Noise(Bitmap input, byte percent=25)
+        public static Bitmap Noise(Bitmap input, byte percent = 25)
         {
-            Bitmap output = new Bitmap(input);
-            Random myrandom = new Random();
+            var output = new Bitmap(input);
+            var myrandom = new Random();
             int width = input.Width;
             int height = input.Height;
-            int PixelsCount = width * height;
-            int PixelsPersent = (percent * PixelsCount) / 100;
-            unsafe
-            {
-                BitmapUnsafeMethods run = new BitmapUnsafeMethods(output);
-                run.LockImage();
+            int pixelsCount = width*height;
+            int pixelsPersent = (percent*pixelsCount)/100;
+            var run = new BitmapUnsafeMethods(output);
+            run.LockImage();
 
-                for (int i = 1; i <= PixelsPersent; i++)
-                {
-                    run.SetPixel(myrandom.Next(0, width), myrandom.Next(0, height), Color.FromArgb(
-                                                                                         myrandom.Next(255),
-                                                                                         myrandom.Next(255),
-                                                                                         myrandom.Next(255),
-                                                                                         myrandom.Next(255)
-                                                                                                          )
-                                                                                                         );
-                }
-                run.UnlockImage();
+            for (int i = 1; i <= pixelsPersent; i++)
+            {
+                run.SetPixel(myrandom.Next(0, width), myrandom.Next(0, height), Color.FromArgb(
+                    myrandom.Next(255),
+                    myrandom.Next(255),
+                    myrandom.Next(255),
+                    myrandom.Next(255)
+                                                                                    )
+                    );
             }
+            run.UnlockImage();
 
             return output;
         }
 
         /// <summary>
-        /// Метод применения фильтра "Только синий"
+        ///     Метод применения фильтра "Только синий"
         /// </summary>
         /// <param name="input">Изображение</param>
         /// <returns>Изображение с фильтром</returns>
@@ -505,34 +475,29 @@ namespace SimplePainterNamespace
         {
             int width = input.Width;
             int height = input.Height;
-            Bitmap output = new Bitmap(input);
-            Color color;
-            unsafe
+            var output = new Bitmap(input);
+            var run = new BitmapUnsafeMethods(output);
+
+            run.LockImage();
+            for (int y = 0; y < height - 1; y++)
             {
-                BitmapUnsafeMethods run = new BitmapUnsafeMethods(output);
-
-                run.LockImage();
-                for (int y = 0; y < height - 1; y++)
+                for (int x = 0; x < width - 1; x++)
                 {
-                    for (int x = 0; x < width - 1; x++)
-                    {
-                        byte A, R, G, B;
-                        color = run.GetPixel(x, y);
-                        A = color.A;
-                        R = (byte)(color.R * 0);
-                        G = (byte)(color.G * 0);
-                        B = (byte)(color.B);
+                    Color color = run.GetPixel(x, y);
+                    byte a = color.A;
+                    var r = (byte) (color.R*0);
+                    var g = (byte) (color.G*0);
+                    byte b = color.B;
 
-                        run.SetPixel(x, y, Color.FromArgb((int)A, (int)R, (int)G, (int)B));
-                    }
+                    run.SetPixel(x, y, Color.FromArgb(a, r, g, b));
                 }
-                run.UnlockImage();
             }
+            run.UnlockImage();
             return output;
         }
 
         /// <summary>
-        /// Метод применения фильтра "Только красный"
+        ///     Метод применения фильтра "Только красный"
         /// </summary>
         /// <param name="input">Изображение</param>
         /// <returns>Изображение с фильтром</returns>
@@ -540,34 +505,29 @@ namespace SimplePainterNamespace
         {
             int width = input.Width;
             int height = input.Height;
-            Bitmap output = new Bitmap(input);
-            Color color;
-            unsafe
+            var output = new Bitmap(input);
+            var run = new BitmapUnsafeMethods(output);
+            run.LockImage();
+            for (int y = 0; y < height - 1; y++)
             {
-                BitmapUnsafeMethods run = new BitmapUnsafeMethods(output);
-                byte A, R, G, B;
-                run.LockImage();
-                for (int y = 0; y < height - 1; y++)
+                for (int x = 0; x < width - 1; x++)
                 {
-                    for (int x = 0; x < width - 1; x++)
-                    {
-                        color = run.GetPixel(x, y);
-                        A = color.A;
-                        R = (byte)(color.R);
-                        G = (byte)(color.G * 0);
-                        B = (byte)(color.B * 0);
+                    Color color = run.GetPixel(x, y);
+                    byte a = color.A;
+                    byte r = color.R;
+                    var g = (byte) (color.G*0);
+                    var b = (byte) (color.B*0);
 
-                        run.SetPixel(x, y, Color.FromArgb((int)A, (int)R, (int)G, (int)B));
-                    }
+                    run.SetPixel(x, y, Color.FromArgb(a, r, g, b));
                 }
-                run.UnlockImage();
             }
+            run.UnlockImage();
             return output;
         }
 
 
         /// <summary>
-        /// Метод применения фильтра "Ночной режим" для изображения
+        ///     Метод применения фильтра "Ночной режим" для изображения
         /// </summary>
         /// <param name="input">Изображение</param>
         /// <returns>Изображение с фильтром</returns>
@@ -575,136 +535,114 @@ namespace SimplePainterNamespace
         {
             int width = input.Width;
             int height = input.Height;
-            Bitmap output = new Bitmap(input);
-            Color color;
-            unsafe
+            var output = new Bitmap(input);
+            var run = new BitmapUnsafeMethods(output);
+            run.LockImage();
+            for (int y = 0; y < height - 1; y++)
             {
-                BitmapUnsafeMethods run = new BitmapUnsafeMethods(output);
-                byte A, R, G, B;
-                run.LockImage();
-                for (int y = 0; y < height - 1; y++)
+                for (int x = 0; x < width - 1; x++)
                 {
-                    for (int x = 0; x < width - 1; x++)
-                    {
-                        color = run.GetPixel(x, y);
-                        A = color.A;
-                        R = (byte)(color.R * 0);
-                        G = (byte)(color.G);
-                        B = (byte)(color.B * 0);
+                    Color color = run.GetPixel(x, y);
+                    byte a = color.A;
+                    var r = (byte) (color.R*0);
+                    byte g = color.G;
+                    var b = (byte) (color.B*0);
 
-                        run.SetPixel(x, y, Color.FromArgb((int)A, (int)R, (int)G, (int)B));
-                    }
+                    run.SetPixel(x, y, Color.FromArgb(a, r, g, b));
                 }
-                run.UnlockImage();
             }
+            run.UnlockImage();
             return output;
         }
 
 
         /// <summary>
-        /// Метод применения фильтра "Рассеивание" для изображения
+        ///     Метод применения фильтра "Рассеивание" для изображения
         /// </summary>
         /// <param name="input">Изображение</param>
         /// <param name="percent">Процент применения</param>
         /// <returns>Изображение с фильтром</returns>
         public static Bitmap Dispersal(Bitmap input, byte percent = 100)
         {
-            Color clr;
-            Color clr2;
-            Bitmap output = new Bitmap(input);
-            Random myrandom = new Random();
+            var output = new Bitmap(input);
+            var myrandom = new Random();
             int width = input.Width;
             int height = input.Height;
-            int PixelsCount = width * height;
-            int PixelsPersent = (percent * PixelsCount) / 100;
-            int Pixel1Width;
-            int Pixel1Height;
-            int Pixel2Width;
-            int Pixel2Height;
-            unsafe
+            int pixelsCount = width*height;
+            int pixelsPersent = (percent*pixelsCount)/100;
+            var run = new BitmapUnsafeMethods(output);
+            run.LockImage();
+
+            for (int i = 1; i <= pixelsPersent; i++)
             {
-                BitmapUnsafeMethods run = new BitmapUnsafeMethods(output);
-                run.LockImage();
+                int pixel1Width = myrandom.Next(0, width);
+                int pixel1Height = myrandom.Next(0, height);
 
-                for (int i = 1; i <= PixelsPersent; i++)
+                int pixel2Width = myrandom.Next(pixel1Width - 5, pixel1Width + 1 + 5);
+                int pixel2Height = myrandom.Next(pixel1Height - 5, pixel1Height + 1 + 5);
+                while ((pixel2Width > pixel1Width) || (pixel2Width < 0))
                 {
-                    Pixel1Width = myrandom.Next(0, width);
-                    Pixel1Height = myrandom.Next(0, height);
-
-                    Pixel2Width = myrandom.Next(Pixel1Width - 5, Pixel1Width + 1 + 5);
-                    Pixel2Height = myrandom.Next(Pixel1Height - 5, Pixel1Height + 1 + 5);
-                    while ((Pixel2Width > Pixel1Width) || (Pixel2Width < 0))
-                    {
-                        Pixel2Width = myrandom.Next(Pixel1Width - 5, Pixel1Width + 1 + 5);
-                    }
-                    while ((Pixel2Height > Pixel1Height) || (Pixel2Height < 0))
-                    {
-                        Pixel2Height = myrandom.Next(Pixel1Height - 5, Pixel1Height + 1 + 5);
-                    }
-
-                    clr = run.GetPixel(Pixel2Width, Pixel2Height);
-                    clr2 = run.GetPixel(Pixel1Width, Pixel1Height);
-                    run.SetPixel(Pixel1Width, Pixel1Height, clr);
-                    run.SetPixel(Pixel2Width, Pixel2Height, clr2);
+                    pixel2Width = myrandom.Next(pixel1Width - 5, pixel1Width + 1 + 5);
                 }
-                run.UnlockImage();
+                while ((pixel2Height > pixel1Height) || (pixel2Height < 0))
+                {
+                    pixel2Height = myrandom.Next(pixel1Height - 5, pixel1Height + 1 + 5);
+                }
+
+                Color clr = run.GetPixel(pixel2Width, pixel2Height);
+                Color clr2 = run.GetPixel(pixel1Width, pixel1Height);
+                run.SetPixel(pixel1Width, pixel1Height, clr);
+                run.SetPixel(pixel2Width, pixel2Height, clr2);
             }
+            run.UnlockImage();
 
             return output;
         }
 
 
         /// <summary>
-        /// Метод применения фильтра "Случайный выбор" для изображения
+        ///     Метод применения фильтра "Случайный выбор" для изображения
         /// </summary>
         /// <param name="input">Изображение</param>
         /// <param name="percent">Процент применения</param>
         /// <returns>Изображение с фильтром</returns>
         public static Bitmap RandomSelect(Bitmap input, byte percent = 100)
         {
-            Color clr;
-            Bitmap output = new Bitmap(input);
-            Random myrandom = new Random();
+            var output = new Bitmap(input);
+            var myrandom = new Random();
             int width = input.Width;
             int height = input.Height;
-            int PixelsCount = width * height;
-            int PixelsPersent = (percent * PixelsCount) / 100;
-            int PixelToSetColorWidth;
-            int PixelToSetColorHeight;
-            int CoordXToGrabColor;
-            int CoordYToGrabColor;
-            unsafe
+            int pixelsCount = width*height;
+            int pixelsPersent = (percent*pixelsCount)/100;
+            var run = new BitmapUnsafeMethods(output);
+            run.LockImage();
+
+            for (int i = 1; i <= pixelsPersent; i++)
             {
-                BitmapUnsafeMethods run = new BitmapUnsafeMethods(output);
-                run.LockImage();
+                int pixelToSetColorWidth = myrandom.Next(0, width);
+                int pixelToSetColorHeight = myrandom.Next(0, height);
 
-                for (int i = 1; i <= PixelsPersent; i++)
+                int coordXToGrabColor = myrandom.Next(pixelToSetColorWidth - 5, pixelToSetColorWidth + 1 + 5);
+                int coordYToGrabColor = myrandom.Next(pixelToSetColorHeight - 5, pixelToSetColorHeight + 1 + 5);
+                while ((coordXToGrabColor > pixelToSetColorWidth) || (coordXToGrabColor < 0))
                 {
-                    PixelToSetColorWidth = myrandom.Next(0, width);
-                    PixelToSetColorHeight = myrandom.Next(0, height);
-
-                    CoordXToGrabColor = myrandom.Next(PixelToSetColorWidth - 5, PixelToSetColorWidth + 1 + 5);
-                    CoordYToGrabColor = myrandom.Next(PixelToSetColorHeight - 5, PixelToSetColorHeight + 1 + 5);
-                    while ((CoordXToGrabColor > PixelToSetColorWidth) || (CoordXToGrabColor < 0))
-                    {
-                        CoordXToGrabColor = myrandom.Next(PixelToSetColorWidth - 5, PixelToSetColorWidth + 1 + 5);
-                    }
-                    while ((CoordYToGrabColor > PixelToSetColorHeight) || (CoordYToGrabColor < 0))
-                    {
-                        CoordYToGrabColor = myrandom.Next(PixelToSetColorHeight - 5, PixelToSetColorHeight + 1 + 5);
-                    }
-                    clr = run.GetPixel(CoordXToGrabColor, CoordYToGrabColor);
-                    run.SetPixel(PixelToSetColorWidth, PixelToSetColorHeight, clr);
+                    coordXToGrabColor = myrandom.Next(pixelToSetColorWidth - 5, pixelToSetColorWidth + 1 + 5);
                 }
-                run.UnlockImage();
+                while ((coordYToGrabColor > pixelToSetColorHeight) || (coordYToGrabColor < 0))
+                {
+                    coordYToGrabColor = myrandom.Next(pixelToSetColorHeight - 5, pixelToSetColorHeight + 1 + 5);
+                }
+                Color clr = run.GetPixel(coordXToGrabColor, coordYToGrabColor);
+                run.SetPixel(pixelToSetColorWidth, pixelToSetColorHeight, clr);
             }
+            run.UnlockImage();
 
             return output;
         }
 
 
         /// <summary>
-        /// Метод применения фильтра "Сепия" для изображения
+        ///     Метод применения фильтра "Сепия" для изображения
         /// </summary>
         /// <param name="input">Изображение</param>
         /// <returns>Изображение с фильтром</returns>
@@ -722,7 +660,7 @@ namespace SimplePainterNamespace
         }
 
         /// <summary>
-        /// Метод применения фильтра "оттенки серого" для изображения
+        ///     Метод применения фильтра "оттенки серого" для изображения
         /// </summary>
         public static Bitmap Grayscale(Bitmap input)
         {
@@ -739,7 +677,7 @@ namespace SimplePainterNamespace
 
 
         /// <summary>
-        /// Метод для инвертирования изображения
+        ///     Метод для инвертирования изображения
         /// </summary>
         /// <param name="input">Изображение</param>
         /// <returns>Изображение с фильтром</returns>
@@ -758,7 +696,7 @@ namespace SimplePainterNamespace
 
 
         /// <summary>
-        /// Извлеченный метод из методов работы с изображением способом ColorMatrix (для уменьшения повторяемости)
+        ///     Извлеченный метод из методов работы с изображением способом ColorMatrix (для уменьшения повторяемости)
         /// </summary>
         /// <param name="input">Изображение</param>
         /// <param name="matrref">Матрица для фильтра ColorMatrix</param>
@@ -769,7 +707,7 @@ namespace SimplePainterNamespace
         {
             output = new Bitmap(input.Width, input.Height);
             attr = new ImageAttributes();
-            ColorMatrix matrix = new ColorMatrix(matrref);
+            var matrix = new ColorMatrix(matrref);
             attr.SetColorMatrix(matrix);
         }
     }

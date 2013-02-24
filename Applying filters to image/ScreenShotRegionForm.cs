@@ -6,133 +6,143 @@ using System.Windows.Forms;
 namespace SimplePainterNamespace
 {
     /// <summary>
-    /// Форма скриншот региона(области)
+    ///     Форма скриншот региона(области)
     /// </summary>
     public partial class ScreenShotRegion : Form
     {
         /// <summary>
-        /// Начальная точка
+        ///     "Стирающая кисть"
         /// </summary>
-        private Point StartPoint = new Point();
-        /// <summary>
-        /// Текущая координата лево верх
-        /// </summary>
-        private Point CurrentTopLeft = new Point();
-        /// <summary>
-        /// Текущая нижняя координата
-        /// </summary>
-        private Point CurrentBottomRight = new Point();
-        /// <summary>
-        /// Основная кисть отрисовки прямоугольника
-        /// </summary>
-        private Pen MyPen = new Pen(Color.DarkRed, 1);
-        /// <summary>
-        /// "Стирающая кисть"
-        /// </summary>
-        private Pen EraserPen = new Pen(Color.FromArgb((int)byte.MaxValue, (int)byte.MaxValue, 192), 1f);
-        /// <summary>
-        /// Флаг нажатия левой кнопки мыши
-        /// </summary>
-        private bool LeftButtonDown;
-        /// <summary>
-        /// Результат выполнения
-        /// </summary>
-        public Bitmap ScreenShot {get; private set;}
-        private Graphics g;
+        private readonly Pen _eraserPen = new Pen(Color.FromArgb(byte.MaxValue, byte.MaxValue, 192), 1f);
 
         /// <summary>
-        /// Конструктор
+        ///     Основная кисть отрисовки прямоугольника
+        /// </summary>
+        private readonly Pen _myPen = new Pen(Color.DarkRed, 1);
+
+        private readonly Graphics g;
+
+        /// <summary>
+        ///     Текущая нижняя координата
+        /// </summary>
+        private Point _currentBottomRight;
+
+        /// <summary>
+        ///     Текущая координата лево верх
+        /// </summary>
+        private Point _currentTopLeft;
+
+        /// <summary>
+        ///     Флаг нажатия левой кнопки мыши
+        /// </summary>
+        private bool _leftButtonDown;
+
+        /// <summary>
+        ///     Начальная точка
+        /// </summary>
+        private Point _startPoint;
+
+        /// <summary>
+        ///     Конструктор
         /// </summary>
         public ScreenShotRegion()
         {
             InitializeComponent();
-            BackColor = Color.FromArgb((int)byte.MaxValue, (int)byte.MaxValue, 192);
-            MouseDown += new MouseEventHandler(M_Click);
-            MouseUp += new MouseEventHandler(M_Up);
-            MouseMove += new MouseEventHandler(M_Move);
-            MyPen.DashStyle = DashStyle.Dash;
+            BackColor = Color.FromArgb(byte.MaxValue, byte.MaxValue, 192);
+            MouseDown += M_Click;
+            MouseUp += M_Up;
+            MouseMove += M_Move;
+            _myPen.DashStyle = DashStyle.Dash;
             g = CreateGraphics();
-            KeyUp += new KeyEventHandler(K_KeyUp);
+            KeyUp += K_KeyUp;
         }
 
         /// <summary>
-        /// Обработчик нажатия левой кнопки мыши
+        ///     Результат выполнения
+        /// </summary>
+        public Bitmap ScreenShot { get; private set; }
+
+        /// <summary>
+        ///     Обработчик нажатия левой кнопки мыши
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void M_Click(object sender, MouseEventArgs e)
         {
-            g.Clear(Color.FromArgb((int)byte.MaxValue, (int)byte.MaxValue,192));
-            LeftButtonDown = true;
-            StartPoint = new Point(Control.MousePosition.X, Control.MousePosition.Y);
+            g.Clear(Color.FromArgb(byte.MaxValue, byte.MaxValue, 192));
+            _leftButtonDown = true;
+            _startPoint = new Point(MousePosition.X, MousePosition.Y);
         }
 
         /// <summary>
-        /// Обработчик конца нажатия кнопки мыши
+        ///     Обработчик конца нажатия кнопки мыши
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void M_Up(object sender, MouseEventArgs e)
         {
-            LeftButtonDown = false;
+            _leftButtonDown = false;
             TakeScreenShot();
-            
         }
 
         /// <summary>
-        /// Обработчик перемещения мыши
+        ///     Обработчик перемещения мыши
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void M_Move(object sender, MouseEventArgs e)
         {
-            if (!LeftButtonDown)
+            if (!_leftButtonDown)
             {
                 return;
             }
-            g.DrawRectangle(EraserPen, CurrentTopLeft.X, CurrentTopLeft.Y, CurrentBottomRight.X - CurrentTopLeft.X, CurrentBottomRight.Y - CurrentTopLeft.Y);
-            if (Cursor.Position.X < StartPoint.X)
+            g.DrawRectangle(_eraserPen, _currentTopLeft.X, _currentTopLeft.Y, _currentBottomRight.X - _currentTopLeft.X,
+                            _currentBottomRight.Y - _currentTopLeft.Y);
+            if (Cursor.Position.X < _startPoint.X)
             {
-                CurrentTopLeft.X = Cursor.Position.X;
-                CurrentBottomRight.X = StartPoint.X;
+                _currentTopLeft.X = Cursor.Position.X;
+                _currentBottomRight.X = _startPoint.X;
             }
             else
             {
-                CurrentTopLeft.X = StartPoint.X;
-                CurrentBottomRight.X = Cursor.Position.X;
+                _currentTopLeft.X = _startPoint.X;
+                _currentBottomRight.X = Cursor.Position.X;
             }
-            if (Cursor.Position.Y < StartPoint.Y)
+            if (Cursor.Position.Y < _startPoint.Y)
             {
-                CurrentTopLeft.Y = Cursor.Position.Y;
-                CurrentBottomRight.Y = StartPoint.Y;
+                _currentTopLeft.Y = Cursor.Position.Y;
+                _currentBottomRight.Y = _startPoint.Y;
             }
             else
             {
-                CurrentTopLeft.Y = StartPoint.Y;
-                CurrentBottomRight.Y = Cursor.Position.Y;
+                _currentTopLeft.Y = _startPoint.Y;
+                _currentBottomRight.Y = Cursor.Position.Y;
             }
-            g.DrawRectangle(MyPen, CurrentTopLeft.X, CurrentTopLeft.Y, CurrentBottomRight.X - CurrentTopLeft.X, CurrentBottomRight.Y - CurrentTopLeft.Y);
+            g.DrawRectangle(_myPen, _currentTopLeft.X, _currentTopLeft.Y, _currentBottomRight.X - _currentTopLeft.X,
+                            _currentBottomRight.Y - _currentTopLeft.Y);
         }
 
         /// <summary>
-        /// Обработчик захвата изображения из области 
+        ///     Обработчик захвата изображения из области
         /// </summary>
         private void TakeScreenShot()
         {
             Hide();
-            Thread.Sleep((int)byte.MaxValue);
-            Point sourcePoint = new Point(CurrentTopLeft.X, CurrentTopLeft.Y);
-            Rectangle selectionRectangle = new Rectangle(CurrentTopLeft.X, CurrentTopLeft.Y, CurrentBottomRight.X - CurrentTopLeft.X, CurrentBottomRight.Y - CurrentTopLeft.Y);
-            Bitmap bitmap = new Bitmap(selectionRectangle.Width, selectionRectangle.Height);
+            Thread.Sleep(byte.MaxValue);
+            var sourcePoint = new Point(_currentTopLeft.X, _currentTopLeft.Y);
+            var selectionRectangle = new Rectangle(_currentTopLeft.X, _currentTopLeft.Y,
+                                                   _currentBottomRight.X - _currentTopLeft.X,
+                                                   _currentBottomRight.Y - _currentTopLeft.Y);
+            var bitmap = new Bitmap(selectionRectangle.Width, selectionRectangle.Height);
             using (Graphics graphics = Graphics.FromImage(bitmap))
             {
                 graphics.CopyFromScreen(sourcePoint, Point.Empty, selectionRectangle.Size);
-
             }
             ScreenshotScreen.ScreenshotedRegion = bitmap;
         }
+
         /// <summary>
-        /// Обработка ESC
+        ///     Обработка ESC
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -140,7 +150,6 @@ namespace SimplePainterNamespace
         {
             if (e.KeyCode != Keys.Escape)
                 return;
-     
         }
     }
 }

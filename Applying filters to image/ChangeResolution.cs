@@ -5,18 +5,19 @@ using System.Windows.Forms;
 namespace SimplePainterNamespace
 {
     /// <summary>
-    /// Класс, наследуемый от "Form". Реализует графический интерфейс
-    /// В данном случае - окно выбора нового размера изображения
+    ///     Класс, наследуемый от "Form". Реализует графический интерфейс
+    ///     В данном случае - окно выбора нового размера изображения
     /// </summary>
     public partial class ChangeResolution : Form
     {
+        
         /// <summary>
-        /// Контейнер изображения для работы
+        ///     Контейнер изображения для работы
         /// </summary>
-        private Bitmap WorkBitmap;
+        private Bitmap _workBitmap;
 
         /// <summary>
-        /// Конструктор с изображением
+        ///     Конструктор с изображением
         /// </summary>
         /// <param name="input">Изображение для последуюзей работы</param>
         public ChangeResolution(Bitmap input)
@@ -24,33 +25,34 @@ namespace SimplePainterNamespace
             InitializeComponent();
             if (input != null)
             {
-                WorkBitmap = input;
+                _workBitmap = input;
                 DefHeightTextBox.Text = input.Height.ToString();
                 DefWidthTextBox.Text = input.Width.ToString();
             }
         }
 
         /// <summary>
-        /// Основной конструктор
-        /// Оставлен для будущего применения.
-        /// НЕ ИСПОЛЬЗОВАТЬ
+        ///     Основной конструктор
+        ///     Оставлен для будущего применения.
+        ///     НЕ ИСПОЛЬЗОВАТЬ
         /// </summary>
         public ChangeResolution()
         {
             InitializeComponent();
+
         }
 
         /// <summary>
-        /// Возвращает измененное изображение
+        ///     Возвращает измененное изображение
         /// </summary>
         public Bitmap ReturnImage
         {
-            get { return WorkBitmap; }
+            get { return _workBitmap; }
         }
 
         /// <summary>
-        /// Обработчик нажатия кнопки "Применить"
-        /// Запускает преобразование и закрывает форму
+        ///     Обработчик нажатия кнопки "Применить"
+        ///     Запускает преобразование и закрывает форму
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -58,23 +60,22 @@ namespace SimplePainterNamespace
         {
             if (NewWidthTextBox.TextLength != 0 || NewHeightTextBox.TextLength != 0)
             {
-                WorkBitmap = NewResolution(Convert.ToInt32(NewWidthTextBox.Text), Convert.ToInt32(NewHeightTextBox.Text));
-                this.Close();
+                _workBitmap = NewResolution(Convert.ToInt32(NewWidthTextBox.Text),
+                                            Convert.ToInt32(NewHeightTextBox.Text));
+                Close();
             }
         }
 
         /// <summary>
-        /// Метод изменения размеров изображения в WorkImage
+        ///     Метод изменения размеров изображения в WorkImage
         /// </summary>
         /// <param name="x">новая ширина</param>
         /// <param name="y">новая высота</param>
         /// <returns>новое изображение</returns>
         private Bitmap NewResolution(int x, int y)
         {
-            Size size = new System.Drawing.Size();
-            size.Width = x;
-            size.Height = y;
-            Bitmap output = new Bitmap(WorkBitmap, size);
+            var size = new Size {Width = x, Height = y};
+            var output = new Bitmap(_workBitmap, size);
             return output;
         }
     }

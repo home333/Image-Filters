@@ -1,6 +1,6 @@
 ﻿namespace SimplePainterNamespace
 {
-    partial class AboutProgram
+    sealed partial class AboutProgram
     {
         /// <summary>
         /// Требуется переменная конструктора.
